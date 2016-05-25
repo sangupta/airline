@@ -5,6 +5,16 @@ Airline is a Java annotation-based framework for parsing Git like command line s
 
 Latest release is 0.7, available from Maven Central.
 
+## Change in this fork
+
+* Remove guava dependency
+* Added `serialVersionUID` to all `Serializable` classes
+* Better enum error message support
+
+All changes done in this repository as the original repo has not been updated since October 2015.
+
+## Usage
+
 ```xml
 <dependency>
     <groupId>io.airlift</groupId>
