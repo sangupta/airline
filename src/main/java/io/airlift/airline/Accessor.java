@@ -158,7 +158,7 @@ public class Accessor
             return new HashSet<Object>();
         }
         if (SortedSet.class.equals(type)) {
-            return new TreeSet();
+            return new TreeSet<Object>();
         }
 
         try {

@@ -1,23 +1,24 @@
 package io.airlift.airline;
 
-import com.google.common.base.Function;
-import com.google.common.base.Objects;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
-import io.airlift.airline.model.CommandGroupMetadata;
-import io.airlift.airline.model.CommandMetadata;
-import io.airlift.airline.model.GlobalMetadata;
-import io.airlift.airline.model.OptionMetadata;
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Maps.newTreeMap;
+import static io.airlift.airline.UsageHelper.toUsage;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Maps.newTreeMap;
-import static io.airlift.airline.UsageHelper.toUsage;
+import com.google.common.base.Function;
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
+
+import io.airlift.airline.model.CommandGroupMetadata;
+import io.airlift.airline.model.CommandMetadata;
+import io.airlift.airline.model.GlobalMetadata;
+import io.airlift.airline.model.OptionMetadata;
 
 public class GlobalUsageSummary
 {
@@ -97,7 +98,7 @@ public class GlobalUsageSummary
         {
             public Iterable<String> apply(Entry<String, String> entry)
             {
-                return ImmutableList.of(entry.getKey(), Objects.firstNonNull(entry.getValue(), ""));
+                return ImmutableList.of(entry.getKey(), MoreObjects.firstNonNull(entry.getValue(), ""));
             }
         }));
         out.newline();
