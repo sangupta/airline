@@ -21,6 +21,11 @@ package io.airlift.airline;
 public class ParseCommandMissingException
         extends ParseException
 {
+    /**
+     * Generated via Eclipse
+     */
+    private static final long serialVersionUID = -2671426251662153521L;
+
     ParseCommandMissingException()
     {
         super("No command specified");

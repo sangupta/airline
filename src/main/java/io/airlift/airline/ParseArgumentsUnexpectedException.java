@@ -25,6 +25,11 @@ import java.util.List;
 public class ParseArgumentsUnexpectedException
         extends ParseException
 {
+    /**
+     * Generated via Eclipse
+     */
+    private static final long serialVersionUID = -3146629773738933406L;
+    
     private final List<String> unparsedInput;
 
     ParseArgumentsUnexpectedException(List<String> unparsedInput)

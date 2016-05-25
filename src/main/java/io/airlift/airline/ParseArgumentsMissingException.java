@@ -21,6 +21,11 @@ package io.airlift.airline;
 public class ParseArgumentsMissingException
         extends ParseException
 {
+    /**
+     * Generated via Eclipse
+     */
+    private static final long serialVersionUID = 7667673846291885081L;
+    
     private final String argumentTitle;
 
     ParseArgumentsMissingException(String argumentTitle)

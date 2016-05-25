@@ -21,6 +21,11 @@ package io.airlift.airline;
 public class ParseOptionMissingValueException
         extends ParseException
 {
+    /**
+     * Generated via Eclipse
+     */
+    private static final long serialVersionUID = -731926542936989571L;
+    
     private final String optionTitle;
 
     ParseOptionMissingValueException(String optionTitle)

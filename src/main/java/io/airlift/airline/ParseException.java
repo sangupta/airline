@@ -21,6 +21,11 @@ package io.airlift.airline;
 public class ParseException
         extends RuntimeException
 {
+    /**
+     * Generated via Eclipse
+     */
+    private static final long serialVersionUID = 3772132549207742875L; 
+
     public ParseException(String string, Object... args)
     {
         super(String.format(string, args));

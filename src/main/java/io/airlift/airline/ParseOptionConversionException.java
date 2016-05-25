@@ -21,6 +21,11 @@ package io.airlift.airline;
 public class ParseOptionConversionException
         extends ParseException
 {
+    /**
+     * Generated via Eclipse
+     */
+    private static final long serialVersionUID = -9105701233341582179L;
+    
     private final String optionTitle;
     private final String value;
     private final String typeName;

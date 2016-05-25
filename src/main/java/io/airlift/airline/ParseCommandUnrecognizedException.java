@@ -25,6 +25,11 @@ import java.util.List;
 public class ParseCommandUnrecognizedException
         extends ParseException
 {
+    /**
+     * Generated via Eclipse
+     */
+    private static final long serialVersionUID = 7580940207857781141L;
+    
     private final List<String> unparsedInput;
 
     ParseCommandUnrecognizedException(List<String> unparsedInput)
