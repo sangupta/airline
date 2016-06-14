@@ -1,9 +1,6 @@
 package io.airlift.airline;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
+import io.airlift.airline.guava.GuavaUtil;
 import io.airlift.airline.model.CommandGroupMetadata;
 import io.airlift.airline.model.CommandMetadata;
 import io.airlift.airline.model.GlobalMetadata;
@@ -13,11 +10,11 @@ import io.airlift.airline.model.SuggesterMetadata;
 
 import javax.inject.Inject;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static io.airlift.airline.ParserUtil.createInstance;
 
 @Command(name = "suggest")
@@ -34,9 +31,8 @@ public class SuggestCommand
     public GlobalMetadata metadata;
 
     @Arguments
-    public List<String> arguments = newArrayList();
+    public List<String> arguments = new ArrayList<>();
 
-    @VisibleForTesting
     public Iterable<String> generateSuggestions()
     {
         Parser parser = new Parser();
@@ -77,7 +73,7 @@ public class SuggestCommand
     @Override
     public void run()
     {
-        System.out.println(Joiner.on("\n").join(generateSuggestions()));
+        System.out.println(GuavaUtil.join("\n", generateSuggestions()));
     }
 
     @Override

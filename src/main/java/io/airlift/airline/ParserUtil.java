@@ -1,14 +1,12 @@
 package io.airlift.airline;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ListMultimap;
+import io.airlift.airline.guava.GuavaUtil;
+import io.airlift.airline.guava.SimpleMultiMap;
 import io.airlift.airline.model.ArgumentsMetadata;
 import io.airlift.airline.model.OptionMetadata;
 
 import java.util.List;
 import java.util.Map;
-
-import static com.google.common.collect.Iterables.concat;
 
 public class ParserUtil
 {
@@ -27,7 +25,7 @@ public class ParserUtil
 
     public static <T> T createInstance(Class<?> type,
             Iterable<OptionMetadata> options,
-            ListMultimap<OptionMetadata, Object> parsedOptions,
+            SimpleMultiMap<OptionMetadata, Object> parsedOptions,
             ArgumentsMetadata arguments,
             Iterable<Object> parsedArguments,
             Iterable<Accessor> metadataInjection,
@@ -42,7 +40,7 @@ public class ParserUtil
 
     public static <T> T injectOptions(T commandInstance,
             Iterable<OptionMetadata> options,
-            ListMultimap<OptionMetadata, Object> parsedOptions,
+            SimpleMultiMap<OptionMetadata, Object> parsedOptions,
             ArgumentsMetadata arguments,
             Iterable<Object> parsedArguments,
             Iterable<Accessor> metadataInjection,
@@ -50,10 +48,10 @@ public class ParserUtil
     {
         // inject options
         for (OptionMetadata option : options) {
-            List<?> values = parsedOptions.get(option);
+            List<?> values = parsedOptions.getValues(option);
             if (option.getArity() > 1 && values != null && !values.isEmpty()) {
                 // hack: flatten the collection
-                values = ImmutableList.copyOf(concat((Iterable<Iterable<Object>>) values));
+                values = GuavaUtil.immutableListOf(concat((Iterable<Iterable<Object>>) values));
             }
             if (values != null && !values.isEmpty()) {
                 for (Accessor accessor : option.getAccessors()) {
@@ -73,7 +71,7 @@ public class ParserUtil
             Object injectee = bindings.get(accessor.getJavaType());
 
             if (injectee != null) {
-                accessor.addValues(commandInstance, ImmutableList.of(injectee));
+                accessor.addValues(commandInstance, GuavaUtil.arrayList(injectee));
             }
         }
 

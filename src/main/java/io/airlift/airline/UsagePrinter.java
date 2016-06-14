@@ -1,11 +1,10 @@
 package io.airlift.airline;
 
-import com.google.common.base.Splitter;
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.google.common.collect.Lists.newArrayList;
+import io.airlift.airline.guava.GuavaUtil;
 
 public class UsagePrinter
 {
@@ -53,7 +52,7 @@ public class UsagePrinter
 
     public UsagePrinter appendTable(Iterable<? extends Iterable<String>> table)
     {
-        List<Integer> columnSizes = newArrayList();
+        List<Integer> columnSizes = new ArrayList<>();
         for (Iterable<String> row : table) {
             int column = 0;
             for (String value : row) {
@@ -91,7 +90,7 @@ public class UsagePrinter
         if (value == null) {
             return this;
         }
-        return appendWords(Splitter.onPattern("\\s+").omitEmptyStrings().trimResults().split(String.valueOf(value)));
+        return appendWords(GuavaUtil.split("\\s+", true, true, String.valueOf(value)));
     }
 
     public UsagePrinter appendWords(Iterable<String> words)

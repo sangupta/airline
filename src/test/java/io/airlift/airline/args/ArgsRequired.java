@@ -18,14 +18,15 @@
 
 package io.airlift.airline.args;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.airlift.airline.Arguments;
 import io.airlift.airline.Command;
-
-import java.util.List;
 
 @Command(name = "ArgsRequired")
 public class ArgsRequired
 {
     @Arguments(description = "List of files", required = true)
-    public List<String> parameters = com.google.common.collect.Lists.newArrayList();
+    public List<String> parameters = new ArrayList<>();
 }

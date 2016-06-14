@@ -1,14 +1,11 @@
 package io.airlift.airline.model;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
 import io.airlift.airline.Accessor;
+import io.airlift.airline.guava.GuavaUtil;
 
 import java.lang.reflect.Field;
+import java.util.HashSet;
 import java.util.Set;
-
-import static com.google.common.collect.Sets.newHashSet;
 
 public class ArgumentsMetadata
 {
@@ -20,21 +17,21 @@ public class ArgumentsMetadata
 
     public ArgumentsMetadata(String title, String description, String usage, boolean required, Iterable<Field> path)
     {
-        Preconditions.checkNotNull(title, "title is null");
-        Preconditions.checkNotNull(path, "path is null");
-        Preconditions.checkArgument(!Iterables.isEmpty(path), "path is empty");
+        GuavaUtil.checkNotNull(title, "title is null");
+        GuavaUtil.checkNotNull(path, "path is null");
+        GuavaUtil.checkArgument(!GuavaUtil.isEmpty(path), "path is empty");
 
         this.title = title;
         this.description = description;
         this.usage = usage;
         this.required = required;
-        this.accessors = ImmutableSet.of(new Accessor(path));
+        this.accessors = GuavaUtil.hashSet(new Accessor(path));
     }
 
     public ArgumentsMetadata(Iterable<ArgumentsMetadata> arguments)
     {
-        Preconditions.checkNotNull(arguments, "arguments is null");
-        Preconditions.checkArgument(!Iterables.isEmpty(arguments), "arguments is empty");
+        GuavaUtil.checkNotNull(arguments, "arguments is null");
+        GuavaUtil.checkArgument(!GuavaUtil.isEmpty(arguments), "arguments is empty");
 
         ArgumentsMetadata first = arguments.iterator().next();
 
@@ -43,14 +40,13 @@ public class ArgumentsMetadata
         this.usage = first.usage;
         this.required = first.required;
 
-        Set<Accessor> accessors = newHashSet();
+        Set<Accessor> accessors = new HashSet<>();
         for (ArgumentsMetadata other : arguments) {
-            Preconditions.checkArgument(first.equals(other),
-                    "Conflicting arguments definitions: %s, %s", first, other);
+            GuavaUtil.checkArgument(first.equals(other), "Conflicting arguments definitions: %s, %s", first, other);
 
             accessors.addAll(other.getAccessors());
         }
-        this.accessors = ImmutableSet.copyOf(accessors);
+        this.accessors = GuavaUtil.copyOf(accessors);
     }
 
     public String getTitle()

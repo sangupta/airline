@@ -1,7 +1,8 @@
 package io.airlift.airline;
 
-import com.google.common.base.Joiner;
 import org.testng.annotations.Test;
+
+import io.airlift.airline.guava.GuavaUtil;
 
 public class TestPing
 {
@@ -20,7 +21,7 @@ public class TestPing
 
     private void ping(String... args)
     {
-        System.out.println("$ ping " + Joiner.on(' ').join(args));
+        System.out.println("$ ping " + GuavaUtil.join(" ", args));
         Ping.main(args);
         System.out.println();
     }

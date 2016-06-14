@@ -18,7 +18,7 @@
 
 package io.airlift.airline;
 
-import com.google.common.collect.ImmutableList;
+import io.airlift.airline.guava.GuavaUtil;
 
 import java.util.List;
 
@@ -35,7 +35,7 @@ public class ParseArgumentsUnexpectedException
     ParseArgumentsUnexpectedException(List<String> unparsedInput)
     {
         super("Found unexpected parameters: %s", unparsedInput);
-        this.unparsedInput = ImmutableList.copyOf(unparsedInput);
+        this.unparsedInput = GuavaUtil.immutableListOf(unparsedInput);
     }
 
     public List<String> getUnparsedInput()

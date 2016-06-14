@@ -1,7 +1,6 @@
 package io.airlift.airline.model;
 
-import com.google.common.base.Function;
-import com.google.common.collect.ImmutableList;
+import io.airlift.airline.guava.GuavaUtil;
 
 import java.util.List;
 
@@ -17,9 +16,9 @@ public class CommandGroupMetadata
     {
         this.name = name;
         this.description = description;
-        this.options = ImmutableList.copyOf(options);
+        this.options = GuavaUtil.immutableListOf(options);
         this.defaultCommand = defaultCommand;
-        this.commands = ImmutableList.copyOf(commands);
+        this.commands = GuavaUtil.immutableListOf(commands);
     }
 
     public String getName()
@@ -61,9 +60,9 @@ public class CommandGroupMetadata
         return sb.toString();
     }
 
-    public static Function<CommandGroupMetadata, String> nameGetter()
+    public static GuavaUtil.ValueChanger<CommandGroupMetadata, String> nameGetter()
     {
-        return new Function<CommandGroupMetadata, String>()
+        return new GuavaUtil.ValueChanger<CommandGroupMetadata, String>()
         {
             public String apply(CommandGroupMetadata input)
             {

@@ -18,11 +18,7 @@
 
 package io.airlift.airline;
 
-import com.google.common.base.Function;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Iterables;
+import io.airlift.airline.guava.GuavaUtil;
 import io.airlift.airline.model.ArgumentsMetadata;
 import io.airlift.airline.model.CommandGroupMetadata;
 import io.airlift.airline.model.CommandMetadata;
@@ -30,11 +26,11 @@ import io.airlift.airline.model.GlobalMetadata;
 import io.airlift.airline.model.MetadataLoader;
 import io.airlift.airline.model.OptionMetadata;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Maps.newHashMap;
 import static io.airlift.airline.ParserUtil.createInstance;
 import static io.airlift.airline.ParserUtil.injectOptions;
 
@@ -42,7 +38,7 @@ public class Cli<C>
 {
     public static <T> CliBuilder<T> builder(String name)
     {
-        Preconditions.checkNotNull(name, "name is null");
+        GuavaUtil.checkNotNull(name, "name is null");
         return new CliBuilder<T>(name);
     }
 
@@ -67,8 +63,8 @@ public class Cli<C>
             Iterable<Class<? extends C>> defaultGroupCommands,
             Iterable<GroupBuilder<C>> groups)
     {
-        Preconditions.checkNotNull(name, "name is null");
-        Preconditions.checkNotNull(typeConverter, "typeConverter is null");
+        GuavaUtil.checkNotNull(name, "name is null");
+        GuavaUtil.checkNotNull(typeConverter, "typeConverter is null");
 
         CommandMetadata defaultCommandMetadata = null;
         if (defaultCommand != null) {
@@ -77,7 +73,7 @@ public class Cli<C>
 
         List<CommandMetadata> defaultCommandGroup = MetadataLoader.loadCommands(defaultGroupCommands);
 
-        List<CommandGroupMetadata> commandGroups = ImmutableList.copyOf(Iterables.transform(groups, new Function<GroupBuilder<C>, CommandGroupMetadata>()
+        List<CommandGroupMetadata> commandGroups = GuavaUtil.immutableListOf(GuavaUtil.transform(groups, new GuavaUtil.ValueChanger<GroupBuilder<C>, CommandGroupMetadata>()
         {
             @Override
             public CommandGroupMetadata apply(GroupBuilder<C> group)
@@ -96,7 +92,7 @@ public class Cli<C>
 
     public C parse(String... args)
     {
-        return parse(ImmutableList.copyOf(args));
+        return parse(GuavaUtil.immutableListOf(args));
     }
 
     public C parse(Iterable<String> args)
@@ -106,12 +102,12 @@ public class Cli<C>
 
     public C parse(CommandFactory<C> commandFactory, String... args)
     {
-        return parse(commandFactory, ImmutableList.copyOf(args));
+        return parse(commandFactory, GuavaUtil.immutableListOf(args));
     }
 
     public C parse(CommandFactory<C> commandFactory, Iterable<String> args)
     {
-        Preconditions.checkNotNull(args, "args is null");
+        GuavaUtil.checkNotNull(args, "args is null");
 
         Parser parser = new Parser();
         ParseState state = parser.parse(metadata, args);
@@ -141,7 +137,7 @@ public class Cli<C>
 
     public C parse(C commandInstance, String... args)
     {
-        Preconditions.checkNotNull(args, "args is null");
+        GuavaUtil.checkNotNull(args, "args is null");
 
         Parser parser = new Parser();
         ParseState state = parser.parse(metadata, args);
@@ -212,42 +208,42 @@ public class Cli<C>
         protected TypeConverter typeConverter = new TypeConverter();
         protected String optionSeparators;
         private Class<? extends C> defaultCommand;
-        private final List<Class<? extends C>> defaultCommandGroupCommands = newArrayList();
-        protected final Map<String, GroupBuilder<C>> groups = newHashMap();
+        private final List<Class<? extends C>> defaultCommandGroupCommands = new ArrayList<>();
+        protected final Map<String, GroupBuilder<C>> groups = new HashMap<>();
         protected CommandFactory<C> commandFactory;
 
         public CliBuilder(String name)
         {
-            Preconditions.checkNotNull(name, "name is null");
-            Preconditions.checkArgument(!name.isEmpty(), "name is empty");
+            GuavaUtil.checkNotNull(name, "name is null");
+            GuavaUtil.checkArgument(!name.isEmpty(), "name is empty");
             this.name = name;
         }
 
         public CliBuilder<C> withDescription(String description)
         {
-            Preconditions.checkNotNull(description, "description is null");
-            Preconditions.checkArgument(!description.isEmpty(), "description is empty");
+            GuavaUtil.checkNotNull(description, "description is null");
+            GuavaUtil.checkArgument(!description.isEmpty(), "description is empty");
             this.description = description;
             return this;
         }
 
         public CliBuilder<C> withCommandFactory(CommandFactory<C> commandFactory)
         {
-            Preconditions.checkNotNull(commandFactory, "commandFactory is null");
+            GuavaUtil.checkNotNull(commandFactory, "commandFactory is null");
             this.commandFactory = commandFactory;
             return this;
         }
 
 //        public CliBuilder<C> withTypeConverter(TypeConverter typeConverter)
 //        {
-//            Preconditions.checkNotNull(typeConverter, "typeConverter is null");
+//            GuavaUtil.checkNotNull(typeConverter, "typeConverter is null");
 //            this.typeConverter = typeConverter;
 //            return this;
 //        }
 
 //        public CliBuilder<C> withOptionSeparators(String optionsSeparator)
 //        {
-//            Preconditions.checkNotNull(optionsSeparator, "optionsSeparator is null");
+//            GuavaUtil.checkNotNull(optionsSeparator, "optionsSeparator is null");
 //            this.optionSeparators = optionsSeparator;
 //            return this;
 //        }
@@ -267,20 +263,20 @@ public class Cli<C>
         public CliBuilder<C> withCommands(Class<? extends C> command, Class<? extends C>... moreCommands)
         {
             this.defaultCommandGroupCommands.add(command);
-            this.defaultCommandGroupCommands.addAll(ImmutableList.copyOf(moreCommands));
+            this.defaultCommandGroupCommands.addAll(GuavaUtil.immutableListOf(moreCommands));
             return this;
         }
 
         public CliBuilder<C> withCommands(Iterable<Class<? extends C>> commands)
         {
-            this.defaultCommandGroupCommands.addAll(ImmutableList.copyOf(commands));
+            this.defaultCommandGroupCommands.addAll(GuavaUtil.immutableListOf(commands));
             return this;
         }
 
         public GroupBuilder<C> withGroup(String name)
         {
-            Preconditions.checkNotNull(name, "name is null");
-            Preconditions.checkArgument(!name.isEmpty(), "name is empty");
+            GuavaUtil.checkNotNull(name, "name is null");
+            GuavaUtil.checkArgument(!name.isEmpty(), "name is empty");
 
             if (groups.containsKey(name)) {
                 return groups.get(name);
@@ -303,34 +299,34 @@ public class Cli<C>
         private String description = null;
         private Class<? extends C> defaultCommand = null;
 
-        private final List<Class<? extends C>> commands = newArrayList();
+        private final List<Class<? extends C>> commands = new ArrayList<>();
 
         private GroupBuilder(String name)
         {
-            Preconditions.checkNotNull(name, "name is null");
+            GuavaUtil.checkNotNull(name, "name is null");
             this.name = name;
         }
 
         public GroupBuilder<C> withDescription(String description)
         {
-            Preconditions.checkNotNull(description, "description is null");
-            Preconditions.checkArgument(!description.isEmpty(), "description is empty");
-            Preconditions.checkState(this.description == null, "description is already set");
+            GuavaUtil.checkNotNull(description, "description is null");
+            GuavaUtil.checkArgument(!description.isEmpty(), "description is empty");
+            GuavaUtil.checkState(this.description == null, "description is already set");
             this.description = description;
             return this;
         }
 
         public GroupBuilder<C> withDefaultCommand(Class<? extends C> defaultCommand)
         {
-            Preconditions.checkNotNull(defaultCommand, "defaultCommand is null");
-            Preconditions.checkState(this.defaultCommand == null, "defaultCommand is already set");
+            GuavaUtil.checkNotNull(defaultCommand, "defaultCommand is null");
+            GuavaUtil.checkState(this.defaultCommand == null, "defaultCommand is already set");
             this.defaultCommand = defaultCommand;
             return this;
         }
 
         public GroupBuilder<C> withCommand(Class<? extends C> command)
         {
-            Preconditions.checkNotNull(command, "command is null");
+            GuavaUtil.checkNotNull(command, "command is null");
             commands.add(command);
             return this;
         }
@@ -338,13 +334,13 @@ public class Cli<C>
         public GroupBuilder<C> withCommands(Class<? extends C> command, Class<? extends C>... moreCommands)
         {
             this.commands.add(command);
-            this.commands.addAll(ImmutableList.copyOf(moreCommands));
+            this.commands.addAll(GuavaUtil.immutableListOf(moreCommands));
             return this;
         }
 
         public GroupBuilder<C> withCommands(Iterable<Class<? extends C>> commands)
         {
-            this.commands.addAll(ImmutableList.copyOf(commands));
+            this.commands.addAll(GuavaUtil.immutableListOf(commands));
             return this;
         }
     }

@@ -18,7 +18,7 @@
 
 package io.airlift.airline;
 
-import com.google.common.collect.ImmutableList;
+import io.airlift.airline.guava.GuavaUtil;
 
 import java.util.List;
 
@@ -35,7 +35,7 @@ public class ParseCommandUnrecognizedException
     ParseCommandUnrecognizedException(List<String> unparsedInput)
     {
         super("Command '%s' not recognized", unparsedInput.get(0));
-        this.unparsedInput = ImmutableList.copyOf(unparsedInput);
+        this.unparsedInput = GuavaUtil.immutableListOf(unparsedInput);
     }
 
     public List<String> getUnparsedInput()

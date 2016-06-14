@@ -18,20 +18,20 @@
 
 package io.airlift.airline.args;
 
-import com.google.common.collect.Lists;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import io.airlift.airline.Arguments;
 import io.airlift.airline.Command;
 import io.airlift.airline.Option;
-
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
 
 @Command(name = "Args1", description = "args1 description")
 public class Args1
 {
     @Arguments
-    public List<String> parameters = Lists.newArrayList();
+    public List<String> parameters = new ArrayList<>();
 
     @Option(name = {"-log", "-verbose"}, description = "Level of verbosity")
     public Integer verbose = 1;

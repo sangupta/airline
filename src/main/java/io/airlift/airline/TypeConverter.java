@@ -6,10 +6,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 
-import com.google.common.base.Function;
-import com.google.common.base.Joiner;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
+import io.airlift.airline.guava.GuavaUtil;
 
 public class TypeConverter
 {
@@ -20,9 +17,9 @@ public class TypeConverter
 
     public Object convert(String name, Class<?> type, String value)
     {
-        Preconditions.checkNotNull(name, "name is null");
-        Preconditions.checkNotNull(type, "type is null");
-        Preconditions.checkNotNull(value, "value is null");
+        GuavaUtil.checkNotNull(name, "name is null");
+        GuavaUtil.checkNotNull(type, "type is null");
+        GuavaUtil.checkNotNull(value, "value is null");
 
         try {
             if (String.class.isAssignableFrom(type)) {
@@ -62,14 +59,14 @@ public class TypeConverter
                 }
                 catch (InvocationTargetException e) {
                     if (type.isEnum()) {
-                        List<String> enumConstantNames = Lists.transform(Arrays.asList(((Class<Enum>) type).getEnumConstants()), new Function<Enum, String>() {
+                        List<String> enumConstantNames = GuavaUtil.transform(Arrays.asList(((Class<Enum>) type).getEnumConstants()), new GuavaUtil.ValueChanger<Enum, String>() {
                             @Override
                             public String apply(Enum input)
                             {
                                 return input.name();
                             }
                         });
-                        String message = String.format("Invalid %s, Valid values are: %s", name, Joiner.on(", ").join(enumConstantNames));
+                        String message = String.format("Invalid %s, Valid values are: %s", name, GuavaUtil.join(", ", enumConstantNames));
                         throw new ParseOptionConversionException(name, value, type.getSimpleName(), message);
                     }
                 }

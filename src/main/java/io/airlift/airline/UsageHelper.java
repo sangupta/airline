@@ -1,10 +1,7 @@
 package io.airlift.airline;
 
-import com.google.common.base.Function;
-import com.google.common.base.Joiner;
-import com.google.common.collect.ComparisonChain;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
+
+import io.airlift.airline.guava.GuavaUtil;
 import io.airlift.airline.model.ArgumentsMetadata;
 import io.airlift.airline.model.CommandMetadata;
 import io.airlift.airline.model.OptionMetadata;
@@ -15,8 +12,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
-import static com.google.common.collect.Iterables.filter;
-import static com.google.common.collect.Iterables.transform;
 import static io.airlift.airline.model.OptionMetadata.isHiddenPredicate;
 
 public class UsageHelper
@@ -59,7 +54,7 @@ public class UsageHelper
 
         final String argumentString;
         if (option.getArity() > 0) {
-            argumentString = Joiner.on(" ").join(Lists.transform(ImmutableList.of(option.getTitle()), new Function<String, String>()
+            argumentString = GuavaUtil.join(" ", GuavaUtil.transform(GuavaUtil.arrayList(option.getTitle()), new GuavaUtil.ValueChanger<String, String>()
             {
                 public String apply(@Nullable String argument)
                 {
@@ -71,7 +66,7 @@ public class UsageHelper
             argumentString = null;
         }
 
-        Joiner.on(", ").appendTo(stringBuilder, transform(options, new Function<String, String>()
+        GuavaUtil.join(", ", stringBuilder, GuavaUtil.transform(options, new GuavaUtil.ValueChanger<String, String>()
         {
             public String apply(@Nullable String option)
             {
@@ -109,7 +104,7 @@ public class UsageHelper
 
         final String argumentString;
         if (option.getArity() > 0) {
-            argumentString = Joiner.on(" ").join(transform(ImmutableList.of(option.getTitle()), new Function<String, String>()
+            argumentString = GuavaUtil.join(" ", GuavaUtil.transform(GuavaUtil.arrayList(option.getTitle()), new GuavaUtil.ValueChanger<String, String>()
             {
                 public String apply(@Nullable String argument)
                 {
@@ -121,7 +116,7 @@ public class UsageHelper
             argumentString = null;
         }
 
-        Joiner.on(" | ").appendTo(stringBuilder, transform(options, new Function<String, String>()
+        GuavaUtil.join(" | ", stringBuilder, GuavaUtil.transform(options, new GuavaUtil.ValueChanger<String, String>()
         {
             public String apply(@Nullable String option)
             {
@@ -174,7 +169,7 @@ public class UsageHelper
 
     public static List<String> toSynopsisUsage(List<OptionMetadata> options)
     {
-        return ImmutableList.copyOf(transform(filter(options, isHiddenPredicate()), new Function<OptionMetadata, String>()
+        return GuavaUtil.immutableListOf(GuavaUtil.transform(GuavaUtil.filter(options, isHiddenPredicate()), new GuavaUtil.ValueChanger<OptionMetadata, String>()
         {
             public String apply(OptionMetadata option)
             {

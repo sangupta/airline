@@ -18,7 +18,6 @@
 
 package io.airlift.airline;
 
-import com.google.common.collect.ImmutableList;
 import io.airlift.airline.Cli.CliBuilder;
 import io.airlift.airline.args.Args1;
 import io.airlift.airline.args.Args2;
@@ -45,9 +44,6 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.google.common.base.Predicates.compose;
-import static com.google.common.base.Predicates.equalTo;
-import static com.google.common.collect.Iterables.find;
 import static io.airlift.airline.TestingUtil.singleCommandParser;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
@@ -415,7 +411,6 @@ public class TestCommand
         singleCommandParser(ArgsEnum.class).parse("-choice", "A");
     }
 
-    @SuppressWarnings("UnusedDeclaration")
     @Test(expectedExceptions = ParseException.class)
     public void shouldThrowIfUnknownOption()
     {

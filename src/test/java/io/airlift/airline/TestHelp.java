@@ -17,7 +17,6 @@
  */
 package io.airlift.airline;
 
-import com.google.common.collect.ImmutableList;
 import io.airlift.airline.Cli.CliBuilder;
 import io.airlift.airline.Git.Add;
 import io.airlift.airline.Git.RemoteAdd;
@@ -31,6 +30,8 @@ import io.airlift.airline.args.ArgsRequired;
 import io.airlift.airline.args.CommandHidden;
 import io.airlift.airline.args.OptionsHidden;
 import io.airlift.airline.args.OptionsRequired;
+import io.airlift.airline.guava.GuavaUtil;
+
 import org.testng.annotations.Test;
 
 import static io.airlift.airline.SingleCommand.singleCommand;
@@ -68,7 +69,7 @@ public class TestHelp
                 "See 'git help <command>' for more information on a specific command.\n");
 
         out = new StringBuilder();
-        Help.help(gitParser.getMetadata(), ImmutableList.of("add"), out);
+        Help.help(gitParser.getMetadata(), GuavaUtil.arrayList("add"), out);
         assertEquals(out.toString(), "NAME\n" +
                 "        git add - Add file contents to the index\n" +
                 "\n" +
@@ -92,7 +93,7 @@ public class TestHelp
                 "\n");
 
         out = new StringBuilder();
-        Help.help(gitParser.getMetadata(), ImmutableList.of("remote"), out);
+        Help.help(gitParser.getMetadata(), GuavaUtil.arrayList("remote"), out);
         assertEquals(out.toString(), "NAME\n" +
                 "        git remote - Manage set of tracked repositories\n" +
                 "\n" +
@@ -132,7 +133,7 @@ public class TestHelp
         Cli<Object> parser = builder.build();
 
         StringBuilder out = new StringBuilder();
-        Help.help(parser.getMetadata(), ImmutableList.of("Args1"), out);
+        Help.help(parser.getMetadata(), GuavaUtil.arrayList("Args1"), out);
         assertEquals(out.toString(), "NAME\n" +
                 "        test Args1 - args1 description\n" +
                 "\n" +
@@ -189,7 +190,7 @@ public class TestHelp
         Cli<Object> parser = builder.build();
 
         StringBuilder out = new StringBuilder();
-        Help.help(parser.getMetadata(), ImmutableList.of("Args2"), out);
+        Help.help(parser.getMetadata(), GuavaUtil.arrayList("Args2"), out);
         assertEquals(out.toString(), "NAME\n" +
                 "        test Args2 -\n" +
                 "\n" +
@@ -232,7 +233,7 @@ public class TestHelp
         Cli<Object> parser = builder.build();
 
         StringBuilder out = new StringBuilder();
-        Help.help(parser.getMetadata(), ImmutableList.of("ArgsArityString"), out);
+        Help.help(parser.getMetadata(), GuavaUtil.arrayList("ArgsArityString"), out);
         assertEquals(out.toString(), "NAME\n" +
                 "        test ArgsArityString -\n" +
                 "\n" +
@@ -265,7 +266,7 @@ public class TestHelp
         Cli<Object> parser = builder.build();
 
         StringBuilder out = new StringBuilder();
-        Help.help(parser.getMetadata(), ImmutableList.of("ArgsBooleanArity"), out);
+        Help.help(parser.getMetadata(), GuavaUtil.arrayList("ArgsBooleanArity"), out);
         assertEquals(out.toString(), "NAME\n" +
                 "        test ArgsBooleanArity -\n" +
                 "\n" +
@@ -290,7 +291,7 @@ public class TestHelp
         Cli<Object> parser = builder.build();
 
         StringBuilder out = new StringBuilder();
-        Help.help(parser.getMetadata(), ImmutableList.of("ArgsInherited"), out);
+        Help.help(parser.getMetadata(), GuavaUtil.arrayList("ArgsInherited"), out);
         assertEquals(out.toString(), "NAME\n" +
                 "        test ArgsInherited -\n" +
                 "\n" +
@@ -336,7 +337,7 @@ public class TestHelp
         Cli<Object> parser = builder.build();
 
         StringBuilder out = new StringBuilder();
-        Help.help(parser.getMetadata(), ImmutableList.of("ArgsRequired"), out);
+        Help.help(parser.getMetadata(), GuavaUtil.arrayList("ArgsRequired"), out);
         assertEquals(out.toString(), "NAME\n" +
                 "        test ArgsRequired -\n" +
                 "\n" +
@@ -366,7 +367,7 @@ public class TestHelp
         Cli<Object> parser = builder.build();
 
         StringBuilder out = new StringBuilder();
-        Help.help(parser.getMetadata(), ImmutableList.of("OptionsRequired"), out);
+        Help.help(parser.getMetadata(), GuavaUtil.arrayList("OptionsRequired"), out);
         assertEquals(out.toString(), "NAME\n" +
                 "        test OptionsRequired -\n" +
                 "\n" +
@@ -395,7 +396,7 @@ public class TestHelp
         Cli<Object> parser = builder.build();
 
         StringBuilder out = new StringBuilder();
-        Help.help(parser.getMetadata(), ImmutableList.of("OptionsHidden"), out);
+        Help.help(parser.getMetadata(), GuavaUtil.arrayList("OptionsHidden"), out);
         assertEquals(out.toString(), "NAME\n" +
                 "        test OptionsHidden -\n" +
                 "\n" +
@@ -430,7 +431,7 @@ public class TestHelp
                 "See 'test help <command>' for more information on a specific command.\n");
 
         out = new StringBuilder();
-        Help.help(parser.getMetadata(), ImmutableList.of("CommandHidden"), out);
+        Help.help(parser.getMetadata(), GuavaUtil.arrayList("CommandHidden"), out);
         assertEquals(out.toString(), "NAME\n" +
                 "        test CommandHidden -\n" +
                 "\n" +

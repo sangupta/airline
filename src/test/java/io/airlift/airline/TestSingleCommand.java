@@ -18,7 +18,20 @@
 
 package io.airlift.airline;
 
-import com.google.common.collect.ImmutableList;
+import static io.airlift.airline.SingleCommand.singleCommand;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
+
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+
 import io.airlift.airline.Cli.CliBuilder;
 import io.airlift.airline.args.Args1;
 import io.airlift.airline.args.Args2;
@@ -36,23 +49,8 @@ import io.airlift.airline.args.Arity1;
 import io.airlift.airline.args.OptionsRequired;
 import io.airlift.airline.command.CommandAdd;
 import io.airlift.airline.command.CommandCommit;
+import io.airlift.airline.guava.GuavaUtil;
 import io.airlift.airline.model.CommandMetadata;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
-
-import javax.inject.Inject;
-
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.List;
-
-import static com.google.common.base.Predicates.compose;
-import static com.google.common.base.Predicates.equalTo;
-import static com.google.common.collect.Iterables.find;
-import static io.airlift.airline.SingleCommand.singleCommand;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
 
 public class TestSingleCommand
 {
@@ -130,7 +128,7 @@ public class TestSingleCommand
     public void repeatedArgs()
     {
         SingleCommand<Args1> parser = singleCommand(Args1.class);
-        CommandMetadata command = find(ImmutableList.of(parser.getCommandMetadata()), compose(equalTo("Args1"), CommandMetadata.nameGetter()));
+        CommandMetadata command = find(GuavaUtil.arrayList(parser.getCommandMetadata()), compose(equalTo("Args1"), CommandMetadata.nameGetter()));
         assertEquals(command.getAllOptions().size(), 8);
     }
 
@@ -369,7 +367,6 @@ public class TestSingleCommand
         singleCommand(ArgsEnum.class).parse("A");
     }
 
-    @SuppressWarnings("UnusedDeclaration")
     @Test(expectedExceptions = ParseException.class)
     public void shouldThrowIfUnknownOption()
     {

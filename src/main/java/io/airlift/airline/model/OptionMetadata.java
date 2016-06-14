@@ -1,19 +1,14 @@
 package io.airlift.airline.model;
 
-import com.google.common.base.Function;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
 import io.airlift.airline.Accessor;
 import io.airlift.airline.OptionType;
+import io.airlift.airline.guava.GuavaUtil;
 
 import javax.annotation.Nullable;
 
 import java.lang.reflect.Field;
+import java.util.HashSet;
 import java.util.Set;
-
-import static com.google.common.collect.Sets.newHashSet;
 
 public class OptionMetadata
 {
@@ -37,15 +32,15 @@ public class OptionMetadata
             Iterable<String> allowedValues,
             Iterable<Field> path)
     {
-        Preconditions.checkNotNull(optionType, "optionType is null");
-        Preconditions.checkNotNull(options, "options is null");
-        Preconditions.checkArgument(!Iterables.isEmpty(options), "options is empty");
-        Preconditions.checkNotNull(title, "title is null");
-        Preconditions.checkNotNull(path, "path is null");
-        Preconditions.checkArgument(!Iterables.isEmpty(path), "path is empty");
+        GuavaUtil.checkNotNull(optionType, "optionType is null");
+        GuavaUtil.checkNotNull(options, "options is null");
+        GuavaUtil.checkArgument(!GuavaUtil.isEmpty(options), "options is empty");
+        GuavaUtil.checkNotNull(title, "title is null");
+        GuavaUtil.checkNotNull(path, "path is null");
+        GuavaUtil.checkArgument(!GuavaUtil.isEmpty(path), "path is empty");
 
         this.optionType = optionType;
-        this.options = ImmutableSet.copyOf(options);
+        this.options = GuavaUtil.copyOf(options);
         this.title = title;
         this.description = description;
         this.arity = arity;
@@ -53,19 +48,19 @@ public class OptionMetadata
         this.hidden = hidden;
 
         if (allowedValues != null) {
-            this.allowedValues = ImmutableSet.copyOf(allowedValues);
+            this.allowedValues = GuavaUtil.copyOf(allowedValues);
         }
         else {
             this.allowedValues = null;
         }
 
-        this.accessors = ImmutableSet.of(new Accessor(path));
+        this.accessors = GuavaUtil.hashSet(new Accessor(path));
     }
 
     public OptionMetadata(Iterable<OptionMetadata> options)
     {
-        Preconditions.checkNotNull(options, "options is null");
-        Preconditions.checkArgument(!Iterables.isEmpty(options), "options is empty");
+        GuavaUtil.checkNotNull(options, "options is null");
+        GuavaUtil.checkArgument(!GuavaUtil.isEmpty(options), "options is empty");
 
         OptionMetadata option = options.iterator().next();
 
@@ -77,20 +72,20 @@ public class OptionMetadata
         this.required = option.required;
         this.hidden = option.hidden;
         if (option.allowedValues != null) {
-            this.allowedValues = ImmutableSet.copyOf(option.allowedValues);
+            this.allowedValues = GuavaUtil.copyOf(option.allowedValues);
         }
         else {
             this.allowedValues = null;
         }
 
-        Set<Accessor> accessors = newHashSet();
+        Set<Accessor> accessors = new HashSet<>();
         for (OptionMetadata other : options) {
-            Preconditions.checkArgument(option.equals(other),
+            GuavaUtil.checkArgument(option.equals(other),
                     "Conflicting options definitions: %s, %s", option, other);
 
             accessors.addAll(other.getAccessors());
         }
-        this.accessors = ImmutableSet.copyOf(accessors);
+        this.accessors = GuavaUtil.copyOf(accessors);
     }
 
     public OptionType getOptionType()
@@ -219,9 +214,9 @@ public class OptionMetadata
         return sb.toString();
     }
 
-    public static Function<OptionMetadata, Set<String>> optionsGetter()
+    public static GuavaUtil.ValueChanger<OptionMetadata, Set<String>> optionsGetter()
     {
-        return new Function<OptionMetadata, Set<String>>()
+        return new GuavaUtil.ValueChanger<OptionMetadata, Set<String>>()
         {
             public Set<String> apply(OptionMetadata input)
             {

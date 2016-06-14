@@ -1,9 +1,7 @@
 package io.airlift.airline;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterators;
-import com.google.common.collect.PeekingIterator;
+import io.airlift.airline.guava.GuavaUtil;
+import io.airlift.airline.guava.PeekingIterator;
 import io.airlift.airline.model.ArgumentsMetadata;
 import io.airlift.airline.model.CommandGroupMetadata;
 import io.airlift.airline.model.CommandMetadata;
@@ -13,10 +11,6 @@ import io.airlift.airline.model.OptionMetadata;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static com.google.common.base.Predicates.compose;
-import static com.google.common.base.Predicates.equalTo;
-import static com.google.common.collect.Iterables.find;
-
 public class Parser
 {
     private static final Pattern SHORT_OPTIONS_PATTERN = Pattern.compile("-[^-].*");
@@ -24,12 +18,12 @@ public class Parser
     // global> (option value*)* (group (option value*)*)? (command (option value* | arg)* '--'? args*)?
     public ParseState parse(GlobalMetadata metadata, String... params)
     {
-        return parse(metadata, ImmutableList.copyOf(params));
+        return parse(metadata, GuavaUtil.immutableListOf(params));
     }
 
     public ParseState parse(GlobalMetadata metadata, Iterable<String> params)
     {
-        PeekingIterator<String> tokens = Iterators.peekingIterator(params.iterator());
+        PeekingIterator<String> tokens = GuavaUtil.peekingIterator(params.iterator());
 
         ParseState state = ParseState.newInstance().pushContext(Context.GLOBAL);
 
@@ -161,7 +155,7 @@ public class Parser
 
     private ParseState parseLongGnuGetOpt(PeekingIterator<String> tokens, ParseState state, List<OptionMetadata> allowedOptions)
     {
-        List<String> parts = ImmutableList.copyOf(Splitter.on('=').limit(2).split(tokens.peek()));
+        List<String> parts = GuavaUtil.immutableListOf(Splitter.on('=').limit(2).split(tokens.peek()));
         if (parts.size() != 2) {
             return null;
         }

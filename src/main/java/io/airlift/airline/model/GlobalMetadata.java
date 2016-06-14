@@ -1,6 +1,6 @@
 package io.airlift.airline.model;
 
-import com.google.common.collect.ImmutableList;
+import io.airlift.airline.guava.GuavaUtil;
 
 import java.util.List;
 
@@ -22,10 +22,10 @@ public class GlobalMetadata
     {
         this.name = name;
         this.description = description;
-        this.options = ImmutableList.copyOf(options);
+        this.options = GuavaUtil.immutableListOf(options);
         this.defaultCommand = defaultCommand;
-        this.defaultGroupCommands = ImmutableList.copyOf(defaultGroupCommands);
-        this.commandGroups = ImmutableList.copyOf(commandGroups);
+        this.defaultGroupCommands = GuavaUtil.immutableListOf(defaultGroupCommands);
+        this.commandGroups = GuavaUtil.immutableListOf(commandGroups);
     }
 
     public String getName()

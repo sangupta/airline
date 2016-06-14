@@ -1,7 +1,8 @@
 package io.airlift.airline;
 
-import com.google.common.base.Joiner;
 import org.testng.annotations.Test;
+
+import io.airlift.airline.guava.GuavaUtil;
 
 public class TestGit
 {
@@ -24,7 +25,7 @@ public class TestGit
 
     private void git(String... args)
     {
-        System.out.println("$ git " + Joiner.on(' ').join(args));
+        System.out.println("$ git " + GuavaUtil.join(" ", args));
         Git.main(args);
         System.out.println();
     }

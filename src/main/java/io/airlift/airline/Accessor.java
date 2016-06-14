@@ -1,10 +1,6 @@
 package io.airlift.airline;
 
-import com.google.common.base.Function;
-import com.google.common.base.Joiner;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
+import io.airlift.airline.guava.GuavaUtil;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -27,16 +23,16 @@ public class Accessor
 
     public Accessor(Field... path)
     {
-        this(ImmutableList.copyOf(path));
+        this(GuavaUtil.immutableListOf(path));
     }
 
     public Accessor(Iterable<Field> path)
     {
-        Preconditions.checkNotNull(path, "path is null");
-        Preconditions.checkArgument(!Iterables.isEmpty(path), "path is empty");
+        GuavaUtil.checkNotNull(path, "path is null");
+        GuavaUtil.checkArgument(!GuavaUtil.isEmpty(path), "path is empty");
 
-        this.path = ImmutableList.copyOf(path);
-        this.name = this.path.get(0).getDeclaringClass().getSimpleName() + "." + Joiner.on('.').join(Iterables.transform(this.path, new Function<Field, String>()
+        this.path = GuavaUtil.immutableListOf(path);
+        this.name = this.path.get(0).getDeclaringClass().getSimpleName() + "." + GuavaUtil.join(".", GuavaUtil.transform(this.path, new GuavaUtil.ValueChanger<Field, String>()
         {
             public String apply(Field field)
             {
@@ -90,7 +86,7 @@ public class Accessor
 
     public void addValues(Object commandInstance, Iterable<?> values)
     {
-        if (Iterables.isEmpty(values)) {
+        if (GuavaUtil.isEmpty(values)) {
             return;
         }
 
@@ -101,11 +97,11 @@ public class Accessor
         field.setAccessible(true);
         if (Collection.class.isAssignableFrom(field.getType())) {
             Collection<Object> collection = getOrCreateCollectionField(name, instance, field);
-            Iterables.addAll(collection, values);
+            GuavaUtil.addAll(collection, values);
         }
         else {
             try {
-                field.set(instance, Iterables.getLast(values));
+                field.set(instance, GuavaUtil.getLast(values));
             }
             catch (Exception e) {
                 throw new ParseException(e, "Error setting %s for argument %s", field.getName(), name);

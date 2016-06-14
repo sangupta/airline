@@ -1,29 +1,24 @@
 package io.airlift.airline.model;
 
-import com.google.common.base.Function;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.ListMultimap;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+
 import io.airlift.airline.Accessor;
 import io.airlift.airline.Arguments;
 import io.airlift.airline.Command;
 import io.airlift.airline.Option;
 import io.airlift.airline.OptionType;
 import io.airlift.airline.Suggester;
-
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-
-import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
-import static com.google.common.collect.Iterables.transform;
-import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Maps.newHashMap;
+import io.airlift.airline.guava.GuavaUtil;
+import io.airlift.airline.guava.SimpleMultiMap;
 
 public class MetadataLoader
 {
@@ -62,9 +57,9 @@ public class MetadataLoader
         return new CommandGroupMetadata(name, description, groupOptions, defaultCommand, commands);
     }
 
-    public static <T> ImmutableList<CommandMetadata> loadCommands(Iterable<Class<? extends T>> defaultCommands)
+    public static <T> List<CommandMetadata> loadCommands(Iterable<Class<? extends T>> defaultCommands)
     {
-        return ImmutableList.copyOf(Iterables.transform(defaultCommands, new Function<Class<?>, CommandMetadata>()
+        return GuavaUtil.copyOf(GuavaUtil.transform(defaultCommands, new GuavaUtil.ValueChanger<Class<?>, CommandMetadata>()
         {
             public CommandMetadata apply(Class<?> commandType)
             {
@@ -79,7 +74,8 @@ public class MetadataLoader
         for (Class<?> cls = commandType; command == null && !Object.class.equals(cls); cls = cls.getSuperclass()) {
             command = cls.getAnnotation(Command.class);
         }
-        Preconditions.checkArgument(command != null, "Command %s is not annotated with @Command", commandType.getName());
+        
+        GuavaUtil.checkArgument(command != null, "Command %s is not annotated with @Command", commandType.getName());
         String name = command.name();
         String description = command.description().isEmpty() ? null : command.description();
         boolean hidden = command.hidden();
@@ -92,7 +88,7 @@ public class MetadataLoader
                 hidden, injectionMetadata.globalOptions,
                 injectionMetadata.groupOptions,
                 injectionMetadata.commandOptions,
-                Iterables.getFirst(injectionMetadata.arguments, null),
+                GuavaUtil.getFirst(injectionMetadata.arguments, null),
                 injectionMetadata.metadataInjections,
                 commandType);
 
@@ -118,7 +114,7 @@ public class MetadataLoader
         for (Class<?> cls = type; !Object.class.equals(cls); cls = cls.getSuperclass()) {
             for (Field field : cls.getDeclaredFields()) {
                 field.setAccessible(true);
-                ImmutableList<Field> path = concat(fields, field);
+                List<Field> path = GuavaUtil.concatList(fields, field);
 
                 Inject injectAnnotation = field.getAnnotation(Inject.class);
                 if (injectAnnotation != null) {
@@ -143,11 +139,11 @@ public class MetadataLoader
                         name = field.getName();
                     }
 
-                    List<String> options = ImmutableList.copyOf(optionAnnotation.name());
+                    List<String> options = GuavaUtil.immutableListOf(optionAnnotation.name());
                     String description = optionAnnotation.description();
 
                     int arity = optionAnnotation.arity();
-                    Preconditions.checkArgument(arity >= 0 || arity == Integer.MIN_VALUE, "Invalid arity for option %s", name);
+                    GuavaUtil.checkArgument(arity >= 0 || arity == Integer.MIN_VALUE, "Invalid arity for option %s", name);
 
                     if (optionAnnotation.arity() >= 0) {
                         arity = optionAnnotation.arity();
@@ -164,7 +160,7 @@ public class MetadataLoader
 
                     boolean required = optionAnnotation.required();
                     boolean hidden = optionAnnotation.hidden();
-                    List<String> allowedValues = ImmutableList.copyOf(optionAnnotation.allowedValues());
+                    List<String> allowedValues = GuavaUtil.immutableListOf(optionAnnotation.allowedValues());
                     if (allowedValues.isEmpty()) {
                         allowedValues = null;
                     }
@@ -205,12 +201,12 @@ public class MetadataLoader
 
     private static List<OptionMetadata> mergeOptionSet(List<OptionMetadata> options)
     {
-        ListMultimap<OptionMetadata, OptionMetadata> metadataIndex = ArrayListMultimap.create();
+        SimpleMultiMap<OptionMetadata, OptionMetadata> metadataIndex = new SimpleMultiMap<>();
         for (OptionMetadata option : options) {
             metadataIndex.put(option, option);
         }
 
-        options = ImmutableList.copyOf(transform(metadataIndex.asMap().values(), new Function<Collection<OptionMetadata>, OptionMetadata>()
+        options = GuavaUtil.immutableListOf(GuavaUtil.transform(metadataIndex.asMap().values(), new GuavaUtil.ValueChanger<Collection<OptionMetadata>, OptionMetadata>()
         {
             @Override
             public OptionMetadata apply(@Nullable Collection<OptionMetadata> options)
@@ -219,7 +215,7 @@ public class MetadataLoader
             }
         }));
 
-        Map<String, OptionMetadata> optionIndex = newHashMap();
+        Map<String, OptionMetadata> optionIndex = new HashMap<>();
         for (OptionMetadata option : options) {
             for (String optionName : option.getOptions()) {
                 if (optionIndex.containsKey(optionName)) {
@@ -235,18 +231,13 @@ public class MetadataLoader
         return options;
     }
 
-    private static <T> ImmutableList<T> concat(Iterable<T> iterable, T item)
-    {
-        return ImmutableList.<T>builder().addAll(iterable).add(item).build();
-    }
-
     private static class InjectionMetadata
     {
-        private List<OptionMetadata> globalOptions = newArrayList();
-        private List<OptionMetadata> groupOptions = newArrayList();
-        private List<OptionMetadata> commandOptions = newArrayList();
-        private List<ArgumentsMetadata> arguments = newArrayList();
-        private List<Accessor> metadataInjections = newArrayList();
+        private List<OptionMetadata> globalOptions = new ArrayList<>();
+        private List<OptionMetadata> groupOptions = new ArrayList<>();
+        private List<OptionMetadata> commandOptions = new ArrayList<>();
+        private List<ArgumentsMetadata> arguments = new ArrayList<>();
+        private List<Accessor> metadataInjections = new ArrayList<>();
 
         private void compact()
         {
@@ -255,7 +246,7 @@ public class MetadataLoader
             commandOptions = mergeOptionSet(commandOptions);
 
             if (arguments.size() > 1) {
-                arguments = ImmutableList.of(new ArgumentsMetadata(arguments));
+                arguments = GuavaUtil.arrayList(new ArgumentsMetadata(arguments));
             }
         }
     }

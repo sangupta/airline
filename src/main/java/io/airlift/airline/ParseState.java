@@ -1,9 +1,7 @@
 package io.airlift.airline;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableListMultimap;
-import com.google.common.collect.ListMultimap;
+import io.airlift.airline.guava.GuavaUtil;
+import io.airlift.airline.guava.SimpleMultiMap;
 import io.airlift.airline.model.CommandGroupMetadata;
 import io.airlift.airline.model.CommandMetadata;
 import io.airlift.airline.model.OptionMetadata;
@@ -15,14 +13,14 @@ public class ParseState
     private final List<Context> locationStack;
     private final CommandGroupMetadata group;
     private final CommandMetadata command;
-    private final ListMultimap<OptionMetadata, Object> parsedOptions;
+    private final SimpleMultiMap<OptionMetadata, Object> parsedOptions;
     private final List<Object> parsedArguments;
     private final OptionMetadata currentOption;
     private final List<String> unparsedInput;
 
     ParseState(CommandGroupMetadata group,
             CommandMetadata command,
-            ListMultimap<OptionMetadata, Object> parsedOptions,
+            SimpleMultiMap<OptionMetadata, Object> parsedOptions,
             List<Context> locationStack,
             List<Object> parsedArguments,
             OptionMetadata currentOption,
@@ -39,31 +37,26 @@ public class ParseState
 
     public static ParseState newInstance()
     {
-        return new ParseState(null, null, ArrayListMultimap.<OptionMetadata, Object>create(), ImmutableList.<Context>of(), ImmutableList.of(), null, ImmutableList.<String>of());
+        return new ParseState(null, null, new SimpleMultiMap<>(), ImmutableList.<Context>of(), ImmutableList.of(), null, ImmutableList.<String>of());
     }
 
     public ParseState pushContext(Context location)
     {
-        ImmutableList<Context> locationStack = ImmutableList.<Context>builder()
-                .addAll(this.locationStack)
-                .add(location)
-                .build();
-
+        List<Context> locationStack = GuavaUtil.concatList(this.locationStack, location);
         return new ParseState(group, command, parsedOptions, locationStack, parsedArguments, currentOption, unparsedInput);
     }
 
     public ParseState popContext()
     {
-        ImmutableList<Context> locationStack = ImmutableList.copyOf(this.locationStack.subList(0, this.locationStack.size() - 1));
+        List<Context> locationStack = GuavaUtil.immutableListOf(this.locationStack.subList(0, this.locationStack.size() - 1));
         return new ParseState(group, command, parsedOptions, locationStack, parsedArguments, currentOption, unparsedInput);
     }
 
     public ParseState withOptionValue(OptionMetadata option, Object value)
     {
-        ImmutableListMultimap<OptionMetadata, Object> newOptions = ImmutableListMultimap.<OptionMetadata, Object>builder()
-                .putAll(parsedOptions)
-                .put(option, value)
-                .build();
+        SimpleMultiMap<OptionMetadata, Object> newOptions = new SimpleMultiMap<>();
+        newOptions.putAll(parsedOptions);
+        newOptions.put(option, value);
 
         return new ParseState(group, command, newOptions, locationStack, parsedArguments, currentOption, unparsedInput);
     }
@@ -85,21 +78,13 @@ public class ParseState
 
     public ParseState withArgument(Object argument)
     {
-        ImmutableList<Object> newArguments = ImmutableList.<Object>builder()
-                .addAll(parsedArguments)
-                .add(argument)
-                .build();
-
+        List<Object> newArguments = GuavaUtil.concatList(parsedArguments, argument);
         return new ParseState(group, command, parsedOptions, locationStack, newArguments, currentOption, unparsedInput);
     }
 
     public ParseState withUnparsedInput(String input)
     {
-        ImmutableList<String> newUnparsedInput = ImmutableList.<String>builder()
-                .addAll(unparsedInput)
-                .add(input)
-                .build();
-
+        List<String> newUnparsedInput = GuavaUtil.concatList(unparsedInput, input);
         return new ParseState(group, command, parsedOptions, locationStack, parsedArguments, currentOption, newUnparsedInput);
     }
 
@@ -137,7 +122,7 @@ public class ParseState
         return currentOption;
     }
 
-    public ListMultimap<OptionMetadata, Object> getParsedOptions()
+    public SimpleMultiMap<OptionMetadata, Object> getParsedOptions()
     {
         return parsedOptions;
     }

@@ -1,17 +1,19 @@
 package io.airlift.airline;
 
-import com.google.common.collect.ImmutableList;
-import org.testng.annotations.Test;
-
-import javax.inject.Inject;
-
-import java.util.List;
-
-import static com.google.common.collect.Lists.newArrayList;
 import static io.airlift.airline.TestingUtil.singleCommandParser;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.testng.annotations.Test;
+
+import io.airlift.airline.guava.GuavaUtil;
 
 /**
  * @author dain
@@ -89,7 +91,7 @@ public class TestParametersDelegate
         public static class LeafDelegate
         {
             @Option(name = "--list")
-            public List<String> list = newArrayList("value1", "value2");
+            public List<String> list = Arrays.asList(new String[] { "value1", "value2" });
 
             @Option(name = "--bool")
             public boolean bool;
@@ -128,7 +130,7 @@ public class TestParametersDelegate
     {
         CombinedAndNestedDelegates p = singleCommandParser(CombinedAndNestedDelegates.class)
                 .parse("command", "-d", "234", "--list", "a", "--list", "b", "-a");
-        assertEquals(p.nestedDelegate2.nestedDelegate1.leafDelegate.list, newArrayList("value1", "value2", "a", "b"));
+        assertEquals(p.nestedDelegate2.nestedDelegate1.leafDelegate.list, Arrays.asList(new String[] { "value1", "value2", "a", "b" }));
         assertFalse(p.nestedDelegate2.nestedDelegate1.leafDelegate.bool);
         assertEquals(p.nestedDelegate2.nestedDelegate1.d, Integer.valueOf(234));
         assertFalse(p.nestedDelegate2.isC);
@@ -214,13 +216,13 @@ public class TestParametersDelegate
         public static class Delegate1
         {
             @Arguments
-            public List<String> mainParams1 = newArrayList();
+            public List<String> mainParams1 = new ArrayList<>();
         }
 
         public static class Delegate2
         {
             @Arguments
-            public List<String> mainParams1 = newArrayList();
+            public List<String> mainParams1 = new ArrayList<>();
         }
 
         @Inject
@@ -234,26 +236,25 @@ public class TestParametersDelegate
     public void duplicateMainParametersAreAllowed()
     {
         DuplicateMainParametersAreAllowed value = singleCommandParser(DuplicateMainParametersAreAllowed.class).parse("command", "main", "params");
-        assertEquals(value.delegate1.mainParams1, ImmutableList.of("main", "params"));
-        assertEquals(value.delegate2.mainParams1, ImmutableList.of("main", "params"));
+        assertEquals(value.delegate1.mainParams1, GuavaUtil.arrayList("main", "params"));
+        assertEquals(value.delegate2.mainParams1, GuavaUtil.arrayList("main", "params"));
     }
 
     // ========================================================================================================================
 
-    @SuppressWarnings("UnusedDeclaration")
     @Command(name = "command")
     public static class ConflictingMainParametersAreNotAllowed
     {
         public static class Delegate1
         {
             @Arguments(description = "foo")
-            public List<String> mainParams1 = newArrayList();
+            public List<String> mainParams1 = new ArrayList<>();
         }
 
         public static class Delegate2
         {
             @Arguments(description = "bar")
-            public List<String> mainParams1 = newArrayList();
+            public List<String> mainParams1 = new ArrayList<>();
         }
 
         @Inject

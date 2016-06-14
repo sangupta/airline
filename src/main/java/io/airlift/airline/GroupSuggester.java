@@ -1,13 +1,11 @@
 package io.airlift.airline;
 
+import io.airlift.airline.guava.GuavaUtil;
 import io.airlift.airline.model.CommandGroupMetadata;
 import io.airlift.airline.model.CommandMetadata;
 import io.airlift.airline.model.OptionMetadata;
 
 import javax.inject.Inject;
-
-import static com.google.common.collect.Iterables.concat;
-import static com.google.common.collect.Iterables.transform;
 
 public class GroupSuggester
         implements Suggester
@@ -18,9 +16,9 @@ public class GroupSuggester
     @Override
     public Iterable<String> suggest()
     {
-        return concat(
-                transform(group.getCommands(), CommandMetadata.nameGetter()),
-                concat(transform(group.getOptions(), OptionMetadata.optionsGetter()))
+        return GuavaUtil.concat(
+                GuavaUtil.transform(group.getCommands(), CommandMetadata.nameGetter()),
+                GuavaUtil.concat(GuavaUtil.transform(group.getOptions(), OptionMetadata.optionsGetter()))
         );
     }
 }

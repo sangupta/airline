@@ -1,8 +1,8 @@
 package io.airlift.airline.model;
 
-import com.google.common.collect.ImmutableList;
 import io.airlift.airline.Accessor;
 import io.airlift.airline.Suggester;
+import io.airlift.airline.guava.GuavaUtil;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ public class SuggesterMetadata
     public SuggesterMetadata(Class<? extends Suggester> suggesterClass, List<Accessor> metadataInjections)
     {
         this.suggesterClass = suggesterClass;
-        this.metadataInjections = ImmutableList.copyOf(metadataInjections);
+        this.metadataInjections = GuavaUtil.immutableListOf(metadataInjections);
     }
 
     public Class<? extends Suggester> getSuggesterClass()
